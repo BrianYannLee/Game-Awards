@@ -32,7 +32,7 @@ const getCategoryByID = async (req, res) => {
 };
 
 
-const creatCategory = async (req, res) => {
+const createCategory = async (req, res) => {
  
   const categoryInput = new CategoriesModel(req.body);
 
@@ -59,19 +59,19 @@ const updateCategory = async (req, res) => {
 };
 
 
-const deleteMovie = async (req, res) => {
+const deleteCategory = async (req, res) => {
   try {
-    await MovieModel.findByIdAndDelete(req.params.id);
-    res.json({ message: "Movie Deleted" });
+    await CategoriesModel.findByIdAndDelete(req.params.id);
+    res.json({ message: "Category Deleted" });
   } catch (error) {
     res.status(500).message({ mesasge: error.message });
   }
 };
 
 module.exports = {
-  getAllMovies,
-  getMovieByID,
-  creatMovie,
-  updateMovie,
-  deleteMovie,
+  getAllCategories,
+  getCategoryByID,
+  createCategory,
+  updateCategory,
+  deleteCategory,
 };
