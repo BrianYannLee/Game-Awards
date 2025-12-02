@@ -1,4 +1,4 @@
-const GameModel = require("../models/Game");
+const GameModel = require("../models/GamesModel");
 
 const getAllGames = async (req, res) => {
   try {

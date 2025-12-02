@@ -1,4 +1,3 @@
-
 const CategoriesModel = require("../models/CategoriesModel");
 
 const getAllCategories = async (req, res) => {
