@@ -43,7 +43,7 @@ const updateGame = async (req, res) => {
   try {
     const updatedGame = await GameModel.findByIdAndUpdate(
         req.params.id,
-        req.params.body
+        req.body
     );
 
     if (!updatedGame) {
