@@ -48,7 +48,7 @@ function GameDetails() {
       <button onClick={handleDelete} className="delete-button">
         Delete
       </button>
-      <button onClick={() => navigate("/")} className="back-button">
+      <button onClick={() => navigate("/games")} className="back-button">
         Back to List
       </button>
     </div>

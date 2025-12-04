@@ -17,7 +17,6 @@ function GameList() {
     try {
       setLoading(true);
       const data = await gameRepository.getAllGames();
-      console.log(data);
       setGames(data);
     } catch (error) {
       setError("Failed to load games");
@@ -27,7 +26,7 @@ function GameList() {
   };
 
   const handleDelete = (id) => {
-    navigate(`/delete/${id}`);
+    navigate(`/games/delete/${id}`);
   };
 
   const handleViewDetails = (id) => {
@@ -35,7 +34,11 @@ function GameList() {
   };
 
   const handleEdit = (id) => {
-    navigate(`/edit/${id}`);
+    navigate(`/games/edit/${id}`);
+  };
+
+  const handleCreate = () => {
+    navigate("/games/create");
   };
 
   if (loading) return <div>Loading...</div>;
@@ -44,6 +47,10 @@ function GameList() {
   return (
     <div className="game-list">
       <h2>Games</h2>
+
+      {/* Create New Game button */}
+      <button onClick={handleCreate}>Create New Game</button>
+
       {games.length === 0 ? (
         <p>No games found. Add a new game to get started.</p>
       ) : (
@@ -52,9 +59,7 @@ function GameList() {
             <li key={game._id} className="game-item">
               <div className="game-title">{game.title}</div>
               <div className="game-actions">
-                <button onClick={() => handleViewDetails(game._id)}>
-                  View
-                </button>
+                <button onClick={() => handleViewDetails(game._id)}>View</button>
                 <button onClick={() => handleEdit(game._id)}>Edit</button>
                 <button onClick={() => handleDelete(game._id)}>Delete</button>
               </div>

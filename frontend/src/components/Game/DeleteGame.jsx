@@ -32,7 +32,7 @@ function DeleteGame() {
     try {
       setDeleting(true);
       await gameRepository.deleteGame(id);
-      navigate("/");
+      navigate("/games");
     } catch (error) {
       setError("Failed to delete game");
       setDeleting(false);

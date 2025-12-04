@@ -31,7 +31,7 @@ function CreateGame() {
     try {
       setLoading(true);
       await gameRepository.createGame(game);
-      navigate("/");
+      navigate("/games");
     } catch (error) {
       setError("Failed to create game");
     } finally {
@@ -81,7 +81,7 @@ function CreateGame() {
             required
           />
         </div>
-        
+
         <div className="form-actions">
           <button type="submit" disabled={loading}>
             {loading ? "Creating..." : "Create Game"}
