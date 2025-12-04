@@ -88,7 +88,7 @@ function CreateGame() {
           </button>
           <button
             type="button"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/games")}
             disabled={loading}
           >
             Cancel

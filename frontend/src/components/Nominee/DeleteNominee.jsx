@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import NomineeRepository from "../../data/nomineeRepository";
 
 export default function DeleteNominee() {
-  const { categoryId, categoryName } = useParams();
+  const { categoryId, categoryName } = useParams(); // passed from NomineeList
   const navigate = useNavigate();
   const nomineeRepo = new NomineeRepository();
 
@@ -11,27 +11,36 @@ export default function DeleteNominee() {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
 
+  const [nomineesInCategory, setNomineesInCategory] = useState([]);
+
   useEffect(() => {
-    // Just a fake load to show the confirmation page
-    setLoading(false);
-  }, []);
+    const loadNominees = async () => {
+      try {
+        const allNominees = await nomineeRepo.getAllNominees();
+        const filtered = allNominees.filter(
+          (n) => n.category._id === categoryId
+        );
+        setNomineesInCategory(filtered);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load nominees for this category");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadNominees();
+  }, [categoryId]);
 
   const handleDelete = async () => {
     try {
       setDeleting(true);
-
-      // Delete all nominees in this category
-      const nominees = await nomineeRepo.getAllNominees();
-      const toDelete = nominees.filter((n) => n.category._id === categoryId);
-
-      for (let n of toDelete) {
-        await nomineeRepo.deleteNominee(n.game._id, categoryId);
+      for (let n of nomineesInCategory) {
+        await nomineeRepo.deleteNominee(n._id); // use nominee _id here
       }
-
-      navigate("/nominee"); // back to NomineeList
+      navigate("/nominee");
     } catch (err) {
       console.error(err);
-      setError("Failed to delete Nominee");
+      setError("Failed to delete nominees");
       setDeleting(false);
     }
   };
@@ -43,14 +52,12 @@ export default function DeleteNominee() {
     <div>
       <h2>Confirm Deletion</h2>
       <p>
-        Are you sure you want to delete the Nominee{" "}
-        <strong>{categoryName}</strong>? This will remove all nominees in this
-        category. This action cannot be undone.
+        Are you sure you want to delete all nominees in category{" "}
+        <strong>{categoryName}</strong>? This cannot be undone.
       </p>
-
       <div>
         <button onClick={handleDelete} disabled={deleting}>
-          {deleting ? "Deleting..." : "Delete Nominee"}
+          {deleting ? "Deleting..." : "Delete Nominees"}
         </button>
         <button
           onClick={() => navigate("/nominee")}

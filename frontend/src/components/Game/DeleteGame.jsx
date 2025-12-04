@@ -70,7 +70,7 @@ function DeleteGame() {
         </button>
         <button
           className="cancel-button"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/games")}
           disabled={deleting}
         >
           Back to List

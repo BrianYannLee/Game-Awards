@@ -7,7 +7,6 @@ const getAllNominees = async (req,res) => {
         const nominees = await NomineeModel.find()
             .populate("game")
             .populate("category")
-
         res.json(nominees);
     } catch(error) {
       res.status(500).json({ message: error.message });
@@ -36,6 +35,13 @@ const createNominees = async (req,res) => {
         });
 
         const newNominee = await nomineeInput.save();
+        console.log("✅ New nominee created:", {
+      nomineeId: newNominee._id,
+      gameId: game._id,
+      gameName: game.title,          // assuming your game model has a 'name' field
+      categoryId: category._id,
+      categoryName: category.name,  // assuming your category model has a 'name' field
+    });
         res.status(201).json(newNominee);
 
     } catch (error) {
@@ -74,16 +80,14 @@ const updateNominees = async (req,res) => {
 };
 
 const deleteNominee = async (req, res) => {
-  try {
-    const { gameId, categoryId } = req.body;
+  console.log("delte Nomine Reached")
+   try {
+    const { id } = req.params; // nominee id from URL
+   console.log(`Nominee Id to delete: ${id}`);
+    const deleted = await NomineeModel.findByIdAndDelete(id);
 
-    const deletedNominee = await NomineeModel.findOneAndDelete({
-      game: gameId,
-      category: categoryId,
-    });
-
-    if (!deletedNominee) {
-      return res.status(404).json({ message: "Nominee not found for this game and category combination" });
+    if (!deleted) {
+      return res.status(404).json({ message: "Nominee not found" });
     }
 
     res.json({ message: "Nominee deleted successfully" });

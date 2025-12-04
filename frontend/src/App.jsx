@@ -41,9 +41,9 @@ export default function App() {
         {/* Games */}
         <Route path="/games" element={<GameList />} />
         <Route path="/games/create" element={<CreateGame />} />
-        <Route path="/games/:id" element={<GameDetails />} />
-        <Route path="/edit/:id" element={<EditGame />} />
-        <Route path="/delete/:id" element={<DeleteGame />} />
+        <Route path="/games/details/:id" element={<GameDetails />} />
+        <Route path="/games/edit/:id" element={<EditGame />} />
+        <Route path="/games/delete/:id" element={<DeleteGame />} />
 
         {/* Categories */}
         <Route path="/categories" element={<CategoryList />} />
@@ -51,11 +51,11 @@ export default function App() {
 
         {/* Nominees */}
         <Route path="/nominee" element={<NomineeList />} />
-        <Route path="/create-nominee" element={<CreateNominee />} />
-        <Route path="/manage-category/:categoryId/:categoryName" element={<EditNominee />} />
-        <Route path="/delete-nominee/:categoryId/:categoryName" element={<DeleteNominee />} />
+        <Route path="/nominee/create" element={<CreateNominee />} />
+        <Route path="/nominee/edit/:id" element={<EditNominee />} />
+        <Route path="/nominee/delete/:id" element={<DeleteNominee />} />
 
-        {/* Default route */}
+        {/* Default fallback */}
         <Route path="*" element={<NomineeList />} />
       </Routes>
     </div>

@@ -53,7 +53,7 @@ function EditGame() {
         ...game,
         releaseDate: new Date(game.releaseDate),
         });
-      navigate(`/games/${id}`);
+      navigate(`/games/details/${id}`);
     } catch (error) {
       setError("Failed to update game");
     } finally {
@@ -112,7 +112,7 @@ function EditGame() {
           </button>
           <button
             type="button"
-            onClick={() => navigate(`/games/${id}`)}
+            onClick={() => navigate(`/games/details/${id}`)}
             disabled={saving}
           >
             Cancel

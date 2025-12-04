@@ -30,7 +30,7 @@ function GameList() {
   };
 
   const handleViewDetails = (id) => {
-    navigate(`/games/${id}`);
+    navigate(`/games/details/${id}`);
   };
 
   const handleEdit = (id) => {

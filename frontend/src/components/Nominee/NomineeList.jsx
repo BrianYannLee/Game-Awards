@@ -17,8 +17,9 @@ export default function NomineeList() {
     loadCategories();
   }, []);
 
-    const loadNominees = async () => {
+  const loadNominees = async () => {
     setLoading(true);
+
     try {
       const data = await nomineeRepo.getAllNominees();
 
@@ -34,17 +35,17 @@ export default function NomineeList() {
         }
 
         grouped[categoryName].games.push({
+          nomineeId: nom._id,
           gameId: nom.game._id,
           title: nom.game.title,
         });
       });
 
-    setNominees(grouped);
+      setNominees(grouped);
     } catch (err) {
       console.error("Failed to load nominees", err);
     } finally {
-      
-    setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -57,9 +58,9 @@ export default function NomineeList() {
     }
   };
 
-  const handleRemoveGame = async (categoryId, gameId) => {
+  const handleRemoveGame = async (nomineeId) => {
     try {
-      await nomineeRepo.deleteNominee(gameId, categoryId);
+      await nomineeRepo.deleteNominee(nomineeId);
       loadNominees();
     } catch (err) {
       console.error("Failed to delete nominee", err);
@@ -72,24 +73,23 @@ export default function NomineeList() {
 
   return (
     <div>
-      <h1>🏆 Game Awards – Nominees</h1>
+      <h1>🏆 Game Awards Nominees</h1>
 
       {categoryNames.length === 0 && <p>No nominees yet.</p>}
 
       {categoryNames.map((categoryName) => {
         const category = nominees[categoryName];
+
         return (
           <div key={categoryName} className="category-section">
             <h2>{categoryName}</h2>
 
             <ul>
               {category.games.map((g) => (
-                <li key={g.gameId}>
+                <li key={g.noimeeId}>
                   {g.title}{" "}
                   <button
-                    onClick={() =>
-                      handleRemoveGame(category.categoryId, g.gameId)
-                    }
+                    onClick={() => handleRemoveGame(g.nomineeId)}
                   >
                     Remove
                   </button>
@@ -100,18 +100,8 @@ export default function NomineeList() {
             <div className="buttons">
               <button
                 onClick={() =>
-                  navigate("/manage-category/" + category.categoryId + "/" + categoryName)
+                  navigate(`/nominee/delete/${category.categoryId}`)
                 }
-              >
-                Add Game to Nominee
-              </button>
-              <button
-                onClick={() =>
-                  navigate(
-                    `/delete-nominee/${category.categoryId}/${categoryName}`
-                  )
-                }
-                style={{ marginLeft: "10px" }}
               >
                 Delete Nominee
               </button>
@@ -122,10 +112,10 @@ export default function NomineeList() {
         );
       })}
 
-      {/* Add New Nominee */}
+      {/* Add Entirely New Nominee */}
       <div style={{ marginTop: "40px" }}>
-        <h3>Manage Categories</h3>
-        <button onClick={() => navigate("/create-nominee")}>
+        <h3>Create New Nominee</h3>
+        <button onClick={() => navigate("/nominee/create")}>
           Add New Nominee
         </button>
       </div>

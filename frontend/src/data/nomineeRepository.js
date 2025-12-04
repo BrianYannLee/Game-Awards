@@ -8,6 +8,7 @@ export default class NomineeRepository {
         throw new Error("Failed to fetch nominees");
       }
       return await response.json();
+      
     } catch (error) {
       console.error("Error fetching nominees:", error);
       throw error;
@@ -52,12 +53,10 @@ export default class NomineeRepository {
     }
   }
 
-  async deleteNominee(gameId, categoryId) {
-    try {
-      const response = await fetch(API_URL, {
+  async deleteNominee(id) {
+  try {
+      const response = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameId, categoryId }),
       });
 
       if (!response.ok) {

@@ -5,6 +5,6 @@ const router = express.Router();
 router.get("/", NomineeController.getAllNominees);
 router.post("/", NomineeController.createNominees);
 router.put("/", NomineeController.updateNominees);
-router.delete("/", NomineeController.deleteNominee);
+router.delete("/:id", NomineeController.deleteNominee);
 
 module.exports = router;
