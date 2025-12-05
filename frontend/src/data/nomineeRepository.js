@@ -1,16 +1,25 @@
 const API_URL = "http://localhost:3000/api/nominees";
 
 export default class NomineeRepository {
+  
   async getAllNominees() {
     try {
       const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error("Failed to fetch nominees");
-      }
+      if (!response.ok) throw new Error("Failed to fetch nominees");
       return await response.json();
-      
     } catch (error) {
       console.error("Error fetching nominees:", error);
+      throw error;
+    }
+  }
+
+  async getNomineeById(id) {
+    try {
+      const response = await fetch(`${API_URL}/${id}`);
+      if (!response.ok) throw new Error("Failed to fetch nominee");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching nominee:", error);
       throw error;
     }
   }
@@ -23,10 +32,7 @@ export default class NomineeRepository {
         body: JSON.stringify({ gameId, categoryId }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create nominee");
-      }
-
+      if (!response.ok) throw new Error("Failed to create nominee");
       return await response.json();
     } catch (error) {
       console.error("Error creating nominee:", error);
@@ -34,18 +40,18 @@ export default class NomineeRepository {
     }
   }
 
-  async updateNominee(gameId, categoryId, newGameId, newCategoryId) {
+  async updateNominee(id, newGameId, newCategoryId) {
     try {
-      const response = await fetch(`${API_URL}/update`, {
+      const response = await fetch(`${API_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameId, categoryId, newGameId, newCategoryId }),
+        body: JSON.stringify({
+          gameId: newGameId,
+          categoryId: newCategoryId,
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update nominee");
-      }
-
+      if (!response.ok) throw new Error("Failed to update nominee");
       return await response.json();
     } catch (error) {
       console.error("Error updating nominee:", error);
@@ -54,15 +60,12 @@ export default class NomineeRepository {
   }
 
   async deleteNominee(id) {
-  try {
+    try {
       const response = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete nominee");
-      }
-
+      if (!response.ok) throw new Error("Failed to delete nominee");
       return await response.json();
     } catch (error) {
       console.error("Error deleting nominee:", error);

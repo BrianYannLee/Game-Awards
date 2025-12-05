@@ -1,94 +1,100 @@
-const NomineeModel = require("../models/NomineeModel")
-const GamesModel = require("../models/GamesModel")
-const CategoriesModel = require("../models/CategoriesModel")
+const NomineeModel = require("../models/NomineeModel");
+const GamesModel = require("../models/GamesModel");
+const CategoriesModel = require("../models/CategoriesModel");
 
-const getAllNominees = async (req,res) => {
-    try {
-        const nominees = await NomineeModel.find()
-            .populate("game")
-            .populate("category")
-        res.json(nominees);
-    } catch(error) {
-      res.status(500).json({ message: error.message });
-    }
+// Get all nominees
+const getAllNominees = async (req, res) => {
+  try {
+    const nominees = await NomineeModel.find()
+      .populate("game")
+      .populate("category");
+    res.json(nominees);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-const createNominees = async (req,res) => {
+// Get a single nominee by ID
+const getNomineeById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const nominee = await NomineeModel.findById(id)
+      .populate("game")
+      .populate("category");
 
-    try{
+    if (!nominee) return res.status(404).json({ message: "Nominee not found" });
 
-        const { gameId, categoryId } = req.body;
+    res.json(nominee);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-        const game = await GamesModel.findById(gameId);
-        if (!game) {
-        return res.status(404).json({ message: "Game not found" });
-        }
+// Create a new nominee
+const createNominees = async (req, res) => {
+  try {
+    const { gameId, categoryId } = req.body;
 
-        const category = await CategoriesModel.findById(categoryId);
-        if (!category) {
-        return res.status(404).json({ message: "Category not found" });
-        }
+    const game = await GamesModel.findById(gameId);
+    if (!game) return res.status(404).json({ message: "Game not found" });
 
-        const nomineeInput = new NomineeModel({
-        game: gameId,
-        category: categoryId,
-        });
+    const category = await CategoriesModel.findById(categoryId);
+    if (!category) return res.status(404).json({ message: "Category not found" });
 
-        const newNominee = await nomineeInput.save();
-        console.log("✅ New nominee created:", {
+    const newNominee = new NomineeModel({
+      game: gameId,
+      category: categoryId,
+    });
+
+    await newNominee.save();
+
+    console.log("✅ New nominee created:", {
       nomineeId: newNominee._id,
       gameId: game._id,
-      gameName: game.title,          // assuming your game model has a 'name' field
+      gameName: game.title,
       categoryId: category._id,
-      categoryName: category.name,  // assuming your category model has a 'name' field
+      categoryName: category.name,
     });
-        res.status(201).json(newNominee);
 
-    } catch (error) {
+    res.status(201).json(newNominee);
+  } catch (error) {
     res.status(500).json({ message: error.message });
-    } 
-
+  }
 };
 
-const updateNominees = async (req,res) => {
+// Update nominee by ID
+const updateNominee = async (req, res) => {
+  try {
+    const { id } = req.params; // nominee ID
+    const { gameId, categoryId } = req.body; // new values
 
-    try{
+    const newGame = await GamesModel.findById(gameId);
+    if (!newGame) return res.status(404).json({ message: "New game not found" });
 
-        const { gameId, categoryId, newGameId, newCategoryId } = req.body;
+    const newCategory = await CategoriesModel.findById(categoryId);
+    if (!newCategory) return res.status(404).json({ message: "New category not found" });
 
-        const newGame = await GamesModel.findById(newGameId);
-        if (!newGame) return res.status(404).json({ message: "New game not found" });
+    const updatedNominee = await NomineeModel.findByIdAndUpdate(
+      id,
+      { game: gameId, category: categoryId },
+      { new: true }
+    ).populate("game").populate("category");
 
-        const newCategory = await CategoriesModel.findById(newCategoryId);
-        if (!newCategory) return res.status(404).json({ message: "New category not found" });
+    if (!updatedNominee) return res.status(404).json({ message: "Nominee not found" });
 
-        const updatedNominee = await NomineeModel.findOneAndUpdate(
-        { game: gameId, category: categoryId }, 
-        { game: newGameId, category: newCategoryId },
-        { new: true }, 
-        );
-
-        if (!updatedNominee) {
-        return res.status(404).json({ message: "Nominee not found for this game and category combination" });
-        }
-
-        res.json(updatedNominee);
-
-    } catch (error) {
+    res.json(updatedNominee);
+  } catch (error) {
     res.status(500).json({ message: error.message });
-    } 
+  }
 };
 
+// Delete nominee
 const deleteNominee = async (req, res) => {
-  console.log("delte Nomine Reached")
-   try {
-    const { id } = req.params; // nominee id from URL
-   console.log(`Nominee Id to delete: ${id}`);
+  try {
+    const { id } = req.params;
     const deleted = await NomineeModel.findByIdAndDelete(id);
 
-    if (!deleted) {
-      return res.status(404).json({ message: "Nominee not found" });
-    }
+    if (!deleted) return res.status(404).json({ message: "Nominee not found" });
 
     res.json({ message: "Nominee deleted successfully" });
   } catch (error) {
@@ -97,8 +103,9 @@ const deleteNominee = async (req, res) => {
 };
 
 module.exports = {
-    getAllNominees,
-    createNominees,
-    updateNominees,
-    deleteNominee,
-}
+  getAllNominees,
+  getNomineeById,      // ✅ new function
+  createNominees,
+  updateNominee,       // ✅ updated function
+  deleteNominee,
+};

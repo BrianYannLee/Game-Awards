@@ -86,33 +86,28 @@ export default function NomineeList() {
 
             <ul>
               {category.games.map((g) => (
-                <li key={g.noimeeId}>
+                <li key={g.nomineeId}>
                   {g.title}{" "}
-                  <button
-                    onClick={() => handleRemoveGame(g.nomineeId)}
-                  >
+                  
+                  {/* Remove Button */}
+                  <button onClick={() => handleRemoveGame(g.nomineeId)}>
                     Remove
+                  </button>
+
+                  {/* Edit Button */}
+                  <button onClick={() =>navigate(`/nominee/edit/${g.nomineeId}`)}>
+                    Edit
                   </button>
                 </li>
               ))}
             </ul>
-
-            <div className="buttons">
-              <button
-                onClick={() =>
-                  navigate(`/nominee/delete/${category.categoryId}`)
-                }
-              >
-                Delete Nominee
-              </button>
-            </div>
 
             <hr />
           </div>
         );
       })}
 
-      {/* Add Entirely New Nominee */}
+      {/* Add New Nominee */}
       <div style={{ marginTop: "40px" }}>
         <h3>Create New Nominee</h3>
         <button onClick={() => navigate("/nominee/create")}>

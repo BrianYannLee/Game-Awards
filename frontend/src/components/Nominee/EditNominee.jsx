@@ -2,126 +2,131 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import NomineeRepository from "../../data/nomineeRepository";
 import GameRepository from "../../data/gameRepository";
+import CategoryRepository from "../../data/categoryRepository";
 
 export default function EditNominee() {
-  const { categoryId, categoryName } = useParams();
+  const { id } = useParams();   // nomineeId
   const navigate = useNavigate();
 
   const nomineeRepo = new NomineeRepository();
   const gameRepo = new GameRepository();
+  const categoryRepo = new CategoryRepository();
 
-  const [allGames, setAllGames] = useState([]);
-  const [categoryGames, setCategoryGames] = useState([]);
-  const [selectedGame, setSelectedGame] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const [games, setGames] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  const loadData = async () => {
-    setLoading(true);
+  const [selectedGame, setSelectedGame] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  useEffect(() => {
+    loadFormData();
+  }, [id]);
+
+  const loadFormData = async () => {
     try {
-      // Load all games and all nominees for this category
-      const [gamesData, nomineesData] = await Promise.all([
-        gameRepo.getAllGames(),
-        nomineeRepo.getAllNominees(),
+      setLoading(true);
+
+      const [nominee, allGames, allCategories] = await Promise.all([
+        nomineeRepo.getNomineeById(id),
+        gameRepo.getAllGames(),     // ✅ FIXED
+        categoryRepo.getCategories() // ✅ FIXED
       ]);
 
-      setAllGames(gamesData);
+      setGames(allGames);
+      setCategories(allCategories);
 
-      // Filter nominees for this category
-      const filtered = nomineesData.filter(
-        (n) => n.category._id === categoryId
-      );
+      setSelectedGame(nominee.game._id);
+      setSelectedCategory(nominee.category._id);
 
-      setCategoryGames(
-        filtered.map((n) => ({
-          gameId: n.game._id,
-          title: n.game.title,
-        }))
-      );
     } catch (err) {
       console.error(err);
-      setError("Failed to load data");
+      setError("Failed to load nominee information.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAddGame = async () => {
-    if (!selectedGame) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
       setSaving(true);
-      await nomineeRepo.createNominee(selectedGame, categoryId);
-      setSelectedGame("");
-      loadData();
+
+      // nomineeRepo.updateNominee(id, newGameId, newCategoryId)
+      await nomineeRepo.updateNominee(id, selectedGame, selectedCategory); // ✅ FIXED
+
+      navigate("/nominees");
     } catch (err) {
       console.error(err);
-      setError("Failed to add game");
+      setError("Failed to save nominee.");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleRemoveGame = async (gameId) => {
-    if (!window.confirm("Are you sure you want to remove this game?")) return;
-    try {
-      await nomineeRepo.deleteNominee(gameId, categoryId);
-      loadData();
-    } catch (err) {
-      console.error(err);
-      setError("Failed to remove game");
-    }
-  };
-
-  if (loading) return <h3>Loading...</h3>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (loading) return <h2>Loading nominee...</h2>;
 
   return (
     <div>
-      <h2>Manage Nominees for Category: {categoryName}</h2>
+      <h1>Edit Nominee</h1>
 
-      {/* Current games in this category */}
-      {categoryGames.length === 0 ? (
-        <p>No games in this category yet.</p>
-      ) : (
-        <ul>
-          {categoryGames.map((g) => (
-            <li key={g.gameId}>
-              {g.title}{" "}
-              <button onClick={() => handleRemoveGame(g.gameId)}>Remove</button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {/* Add a new game to this category */}
-      <div style={{ marginTop: "20px" }}>
-        <label>Select Game to Add: </label>
-        <select
-          value={selectedGame}
-          onChange={(e) => setSelectedGame(e.target.value)}
-        >
-          <option value="">--Select Game--</option>
-          {allGames
-            .filter((g) => !categoryGames.find((cg) => cg.gameId === g._id))
-            .map((g) => (
+      <form onSubmit={handleSubmit}>
+        
+        {/* Game dropdown */}
+        <div>
+          <label>Game:</label>
+          <select
+            value={selectedGame}
+            onChange={(e) => setSelectedGame(e.target.value)}
+            required
+          >
+            <option value="">-- Select Game --</option>
+            {games.map((g) => (
               <option key={g._id} value={g._id}>
                 {g.title}
               </option>
             ))}
-        </select>
-        <button onClick={handleAddGame} disabled={saving}>
-          {saving ? "Adding..." : "Add Game"}
-        </button>
-      </div>
+          </select>
+        </div>
 
-      <div style={{ marginTop: "30px" }}>
-        <button onClick={() => navigate("/nominee")}>Back to Nominee Dashboard</button>
-      </div>
+        {/* Category dropdown */}
+        <div style={{ marginTop: "10px" }}>
+          <label>Category:</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            required
+          >
+            <option value="">-- Select Category --</option>
+            {categories.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ marginTop: "20px" }}>
+          <button type="submit" disabled={saving}>
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/nominees")}
+            style={{ marginLeft: "10px" }}
+            disabled={saving}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

@@ -48,7 +48,7 @@ const updateCategory = async (req, res) => {
 
     const categoryUpdateById = await CategoriesModel.findByIdAndUpdate(
       req.params.id,
-      req.params.body
+      req.body
     );
 
     res.json(categoryUpdateById);

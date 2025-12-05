@@ -11,6 +11,9 @@ import GameList from "./components/Game/GameList";
 // Category components
 import CategoryList from "./components/Category/CategoryList";
 import CreateCategory from "./components/Category/CreateCategory";
+import CategoryDetail from "./components/Category/CategoryDetail";
+import EditCategory from "./components/Category/EditCategory";
+import DeleteCategory from "./components/Category/DeleteCategory";
 
 // Nominee components
 import NomineeList from "./components/Nominee/NomineeList";
@@ -48,6 +51,9 @@ export default function App() {
         {/* Categories */}
         <Route path="/categories" element={<CategoryList />} />
         <Route path="/categories/create" element={<CreateCategory />} />
+        <Route path="/category/:id" element={<CategoryDetail />} />
+        <Route path="/category/edit/:id" element={<EditCategory />} />
+        <Route path="/category/delete/:id" element={<DeleteCategory />} />
 
         {/* Nominees */}
         <Route path="/nominee" element={<NomineeList />} />
