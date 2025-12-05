@@ -1,6 +1,8 @@
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
 
+import "./App.css";
+
 // Game components
 import CreateGame from "./components/Game/CreateGame";
 import DeleteGame from "./components/Game/DeleteGame";
@@ -26,17 +28,14 @@ export default function App() {
     <div>
       {/* Navbar */}
       <nav>
-        <ul>
-          <li>
-            <Link to="/games">Game List</Link>
-          </li>
-          <li>
-            <Link to="/categories">Category List</Link>
-          </li>
-          <li>
-            <Link to="/nominee">Nominees</Link>
-          </li>
-        </ul>
+        <div className="navbar-logo">
+          <img src="/logo-tga-gold.svg" alt="TGA Logo" />
+        </div>
+        <div className="navbar-links">
+        <Link to="/nominee" className="nav-link">NOMINIEE</Link>
+        <Link to="/games" className="nav-link">GAME</Link>
+        <Link to="/categories" className="nav-link">CATEGORY</Link>
+      </div>
       </nav>
 
       {/* Routes */}
